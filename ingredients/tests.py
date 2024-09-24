@@ -7,12 +7,14 @@ from .forms import IngredientForm, DishForm
 # Model Tests
 class IngredientModelTest(TestCase):
     
+    # create ingredient
     def test_create_ingredient(self):
         """Test that an Ingredient object can be created."""
         ingredient = Ingredient.objects.create(name='Tomato', calories=20)
         self.assertEqual(ingredient.name, 'Tomato')
         self.assertEqual(ingredient.calories, 20)
-
+    
+    # check string for ingredient
     def test_string_representation(self):
         """Test the string representation of an ingredient."""
         ingredient = Ingredient(name='Tomato', calories=20)
@@ -21,17 +23,20 @@ class IngredientModelTest(TestCase):
 # Form Tests
 class IngredientFormTest(TestCase):
 
+    # test ingredient form
     def test_valid_ingredient_form(self):
         """Test that the IngredientForm is valid with correct data."""
         form = IngredientForm(data={'name': 'Tomato', 'calories': 20})
         self.assertTrue(form.is_valid())
-
+    
+    # invalid form
     def test_invalid_ingredient_form(self):
         """Test that the IngredientForm is invalid with missing data."""
         form = IngredientForm(data={'name': '', 'calories': ''})
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 2)  # both fields should raise errors
 
+# testing dish form
 class DishFormTest(TestCase):
 
     def setUp(self):
