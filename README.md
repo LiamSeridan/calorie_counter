@@ -23,7 +23,7 @@ The application uses **Bootstrap** for a simple, responsive UI design.
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/calorie-counter.git
+    git clone https://github.com/LiamSeridan/calorie-counter.git
     cd calorie-counter
     ```
 
