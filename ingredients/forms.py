@@ -2,6 +2,7 @@
 from django import forms
 from .models import Ingredient
 
+# For adding ingredient
 class IngredientForm(forms.ModelForm):
     class Meta:
         model = Ingredient
@@ -11,6 +12,7 @@ class IngredientForm(forms.ModelForm):
             'calories': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+# For adding a dish
 class DishForm(forms.Form):
     ingredients = forms.ModelMultipleChoiceField(
         queryset=Ingredient.objects.all(),
