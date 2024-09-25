@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from .forms import IngredientForm, DishForm
 from .models import Ingredient
+from django.core.cache import cache
 
 def add_ingredient(request):
     if request.method == 'POST':
@@ -15,6 +16,11 @@ def add_ingredient(request):
     return render(request, 'ingredients/add_ingredient.html', {'form': form})
 
 def create_dish(request):
+    ingredients = cache.get('ingredient_list')
+    if not ingredients:
+        ingredients = Ingredient.objects.all()
+        cache.set('ingredient_list', ingredients, timeout=300)  # Cache for 5 minutes
+    
     if request.method == 'POST':
         form = DishForm(request.POST)
         if form.is_valid():
@@ -26,7 +32,7 @@ def create_dish(request):
             })
     else:
         form = DishForm()
-    
+
     return render(request, 'ingredients/create_dish.html', {'form': form})
 
 def ingredient_list(request):
