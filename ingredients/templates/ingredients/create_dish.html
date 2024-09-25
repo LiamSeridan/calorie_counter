@@ -10,6 +10,19 @@
 <body>
 <div class="container mt-5">
     <h2>Create Dish</h2>
+    
+    <form method="get" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="category_filter" class="form-label">Filter by Category:</label>
+                {{ form.category_filter }}
+            </div>
+            <div class="col-md-2 mt-4">
+                <button type="submit" class="btn btn-secondary">Filter</button>
+            </div>
+        </div>
+    </form>
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
