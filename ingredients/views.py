@@ -1,7 +1,7 @@
 # ingredients/views.py
 from django.shortcuts import render, redirect
-from .forms import IngredientForm, DishForm
-from .models import Ingredient
+from .forms import IngredientForm, DishForm, CategoryForm
+from .models import Ingredient, Category
 
 def add_ingredient(request):
     if request.method == 'POST':
@@ -15,20 +15,43 @@ def add_ingredient(request):
     return render(request, 'ingredients/add_ingredient.html', {'form': form})
 
 def create_dish(request):
+    ingredients = Ingredient.objects.all()
+
     if request.method == 'POST':
         form = DishForm(request.POST)
         if form.is_valid():
             selected_ingredients = form.cleaned_data['ingredients']
             total_calories = sum(ingredient.calories for ingredient in selected_ingredients)
+
             return render(request, 'ingredients/dish_result.html', {
                 'ingredients': selected_ingredients,
                 'total_calories': total_calories
             })
     else:
         form = DishForm()
-    
+        # If category_filter is selected, filter the ingredients by that category
+        category_filter = request.GET.get('category_filter', None)
+        if category_filter:
+            ingredients = ingredients.filter(category_id=category_filter)
+        form.fields['ingredients'].queryset = ingredients
+
     return render(request, 'ingredients/create_dish.html', {'form': form})
 
 def ingredient_list(request):
     ingredients = Ingredient.objects.all()
     return render(request, 'ingredients/ingredient_list.html', {'ingredients': ingredients})
+
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')  # Redirect to a category list page or other appropriate page
+    else:
+        form = CategoryForm()
+
+    return render(request, 'ingredients/add_category.html', {'form': form})
+
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'ingredients/category_list.html', {'categories': categories})
