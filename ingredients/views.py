@@ -1,10 +1,7 @@
 # ingredients/views.py
 from django.shortcuts import render, redirect
-
-from .forms import IngredientForm, DishForm
-from .models import Ingredient
-from django.core.cache import cache
-
+from .forms import IngredientForm, DishForm, CategoryForm
+from .models import Ingredient, Category
 
 def add_ingredient(request):
     if request.method == 'POST':
@@ -18,12 +15,7 @@ def add_ingredient(request):
     return render(request, 'ingredients/add_ingredient.html', {'form': form})
 
 def create_dish(request):
-
-    ingredients = cache.get('ingredient_list')
-    if not ingredients:
-        ingredients = Ingredient.objects.all()
-        cache.set('ingredient_list', ingredients, timeout=300)  # Cache for 5 minutes
-    
+    ingredients = Ingredient.objects.all()
 
     if request.method == 'POST':
         form = DishForm(request.POST)
@@ -37,7 +29,11 @@ def create_dish(request):
             })
     else:
         form = DishForm()
-
+        # If category_filter is selected, filter the ingredients by that category
+        category_filter = request.GET.get('category_filter', None)
+        if category_filter:
+            ingredients = ingredients.filter(category_id=category_filter)
+        form.fields['ingredients'].queryset = ingredients
 
     return render(request, 'ingredients/create_dish.html', {'form': form})
 
