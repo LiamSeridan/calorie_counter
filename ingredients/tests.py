@@ -1,47 +1,55 @@
 # ingredients/tests.py
 from django.test import TestCase
 from django.urls import reverse
-from .models import Ingredient
+from .models import Ingredient, Category
 from .forms import IngredientForm, DishForm
 
 # Model Tests
 class IngredientModelTest(TestCase):
-    
+
+    def setUp(self):
+        self.category = Category.objects.create(name="Vegetable")
+
     # create ingredient
     def test_create_ingredient(self):
-        """Test that an Ingredient object can be created."""
-        ingredient = Ingredient.objects.create(name='Tomato', calories=20)
+        """Test that an Ingredient object can be created with a category."""
+        ingredient = Ingredient.objects.create(name='Tomato', calories=20, category=self.category)
         self.assertEqual(ingredient.name, 'Tomato')
         self.assertEqual(ingredient.calories, 20)
-    
+        self.assertEqual(ingredient.category.name, 'Vegetable')
+
     # check string for ingredient
     def test_string_representation(self):
         """Test the string representation of an ingredient."""
-        ingredient = Ingredient(name='Tomato', calories=20)
+        ingredient = Ingredient(name='Tomato', calories=20, category=self.category)
         self.assertEqual(str(ingredient), 'Tomato')
 
 # Form Tests
 class IngredientFormTest(TestCase):
 
+    def setUp(self):
+        self.category = Category.objects.create(name="Vegetable")
+
     # test ingredient form
     def test_valid_ingredient_form(self):
         """Test that the IngredientForm is valid with correct data."""
-        form = IngredientForm(data={'name': 'Tomato', 'calories': 20})
+        form = IngredientForm(data={'name': 'Tomato', 'calories': 20, 'category': self.category.id})
         self.assertTrue(form.is_valid())
-    
+
     # invalid form
     def test_invalid_ingredient_form(self):
         """Test that the IngredientForm is invalid with missing data."""
-        form = IngredientForm(data={'name': '', 'calories': ''})
+        form = IngredientForm(data={'name': '', 'calories': '', 'category': ''})
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 2)  # both fields should raise errors
+        self.assertEqual(len(form.errors), 3)  # all fields should raise errors
 
 # testing dish form
 class DishFormTest(TestCase):
 
     def setUp(self):
-        self.ingredient1 = Ingredient.objects.create(name='Tomato', calories=20)
-        self.ingredient2 = Ingredient.objects.create(name='Cheese', calories=100)
+        self.category = Category.objects.create(name="Vegetable")
+        self.ingredient1 = Ingredient.objects.create(name='Tomato', calories=20, category=self.category)
+        self.ingredient2 = Ingredient.objects.create(name='Cheese', calories=100, category=self.category)
 
     def test_dish_form_valid(self):
         """Test that DishForm is valid when ingredients are selected."""
@@ -56,6 +64,9 @@ class DishFormTest(TestCase):
 # View Tests
 class IngredientViewTests(TestCase):
 
+    def setUp(self):
+        self.category = Category.objects.create(name="Vegetable")
+
     def test_add_ingredient_view_get(self):
         """Test that the add_ingredient view renders properly on GET request."""
         response = self.client.get(reverse('add_ingredient'))
@@ -63,10 +74,11 @@ class IngredientViewTests(TestCase):
         self.assertTemplateUsed(response, 'ingredients/add_ingredient.html')
 
     def test_add_ingredient_view_post(self):
-        """Test that a POST request adds a new ingredient."""
+        """Test that a POST request adds a new ingredient with a category."""
         response = self.client.post(reverse('add_ingredient'), {
             'name': 'Tomato',
-            'calories': 20
+            'calories': 20,
+            'category': self.category.id
         })
         self.assertEqual(response.status_code, 302)  # should redirect after successful POST
         self.assertTrue(Ingredient.objects.filter(name='Tomato').exists())
@@ -74,8 +86,9 @@ class IngredientViewTests(TestCase):
 class CreateDishViewTests(TestCase):
 
     def setUp(self):
-        self.ingredient1 = Ingredient.objects.create(name='Tomato', calories=20)
-        self.ingredient2 = Ingredient.objects.create(name='Cheese', calories=100)
+        self.category = Category.objects.create(name="Vegetable")
+        self.ingredient1 = Ingredient.objects.create(name='Tomato', calories=20, category=self.category)
+        self.ingredient2 = Ingredient.objects.create(name='Cheese', calories=100, category=self.category)
 
     def test_create_dish_view_get(self):
         """Test that the create_dish view renders correctly on GET."""
@@ -94,13 +107,17 @@ class CreateDishViewTests(TestCase):
 # Integration Test
 class IngredientAndDishIntegrationTest(TestCase):
 
+    def setUp(self):
+        self.category = Category.objects.create(name="Vegetable")
+
     def test_add_ingredient_and_create_dish(self):
         """Test the complete flow from adding ingredients to creating a dish."""
         
         # Add an ingredient
         response = self.client.post(reverse('add_ingredient'), {
             'name': 'Lettuce',
-            'calories': 5
+            'calories': 5,
+            'category': self.category.id
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Ingredient.objects.filter(name='Lettuce').exists())
