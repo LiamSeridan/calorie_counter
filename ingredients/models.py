@@ -1,5 +1,4 @@
 # ingredients/models.py
-from django.db import models
 
 # ingredients models
 class Ingredient(models.Model):
