@@ -1,5 +1,5 @@
 # ingredients/models.py
-
+from django.db import models
 # ingredients models
 class Ingredient(models.Model):
     name = models.CharField(max_length=100, unique=True)
