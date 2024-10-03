@@ -2,11 +2,11 @@ name: Django CI/CD Workflow
 
 on:
   push:
-    branches:
-      - minor_improvements
+    paths:
+      - 'Dockerfile'
   pull_request:
-    branches:
-      - minor_improvements
+    paths:
+      - 'Dockerfile'
 
 jobs:
   build:
