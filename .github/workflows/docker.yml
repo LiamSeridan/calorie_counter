@@ -2,11 +2,8 @@ name: Docker CI/CD Workflow
 
 on:
   push:
-    branches:
-      - categories
-  pull_request:
-    branches:
-      - categories
+    paths:
+      - Dockerfile
 
 jobs:
   build:
