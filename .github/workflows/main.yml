@@ -3,10 +3,10 @@ name: Django CI/CD Workflow
 on:
   push:
     branches:
-      - main
+      - minor_improvements
   pull_request:
     branches:
-      - main
+      - minor_improvements
 
 jobs:
   build:
