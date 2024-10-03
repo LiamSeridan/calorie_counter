@@ -7,16 +7,11 @@ on:
   pull_request:
     branches:
       - minor_improvements
-
+      
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    services:
-      # Use a service for the SQLite database (though Django will use the file-based SQLite)
-      db:
-        image: sqlite
 
     steps:
     # Step 1: Check out the repository
