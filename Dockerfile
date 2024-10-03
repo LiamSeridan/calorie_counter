@@ -8,6 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory inside the container
 WORKDIR /app
 
+
 # Copy the project files into the container
 COPY . /app/
 
